@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GoForMe – Your Personal Errand Runner</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: "Roboto", sans-serif;
+    }
+    #map {
+      height: 450px;
+      width: 100%;
+      background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+      font-size: 1.125rem;
+      margin-bottom: 2rem;
+    }
+    .service-item {
+      transition: all 0.2s ease-in-out;
+    }
+    .service-item:hover {
+      background-color: #f3f4f6;
+      transform: translateX(4px);
+    }
+    .service-item.active {
+      background-color: #000;
+      color: #fff;
+    }
+    .service-item.active:hover {
+      background-color: #374151;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="flex min-h-screen">
+    <!-- Side Navigation -->
+    <nav class="w-80 bg-white shadow-lg flex flex-col">
+      <!-- Logo Section -->
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center space-x-2">
+          <span class="material-icons text-3xl">directions_run</span>
+          <h1 class="text-2xl font-bold">GoForMe</h1>
+        </div>
+        <p class="text-sm text-gray-600 mt-1">Your Personal Errand Runner</p>
+      </div>
+
+      <!-- Services List -->
+      <div class="flex-1 overflow-y-auto">
+        <div class="p-4">
+          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Available Services</h3>
+          
+          <!-- Property & Real Estate -->
+          <div class="mb-4">
+            <h4 class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">Property & Real Estate</h4>
+            <div class="space-y-1">
+              <div class="service-item active flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">home</span>
+                Property Visits
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">vpn_key</span>
+                Key Drop-off/Pickup
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">build</span>
+                Maintenance Inspections
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">description</span>
+                Lease Signing Delivery
+              </div>
+            </div>
+          </div>
+
+          <!-- Moving Assistance -->
+          <div class="mb-4">
+            <h4 class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">Moving Assistance</h4>
+            <div class="space-y-1">
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">local_shipping</span>
+                Small Moves
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">inventory_2</span>
+                Loading/Unloading
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">layers</span>
+                Packing Services
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">volunteer_activism</span>
+                Donation Drop-off
+              </div>
+            </div>
+          </div>
+
+          <!-- Groceries & Essentials -->
+          <div class="mb-4">
+            <h4 class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">Groceries & Essentials</h4>
+            <div class="space-y-1">
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">shopping_cart</span>
+                Grocery Shopping
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">medical_services</span>
+                Pharmacy Pickups
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">store</span>
+                Convenience Store Runs
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">restaurant</span>
+                Meal Delivery
+              </div>
+            </div>
+          </div>
+
+          <!-- Professional Logistics -->
+          <div class="mb-4">
+            <h4 class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">Professional Logistics</h4>
+            <div class="space-y-1">
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">folder</span>
+                Document Courier
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">mail</span>
+                Business Mail Delivery
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">business_center</span>
+                Office Supply Runs
+              </div>
+            </div>
+          </div>
+
+          <!-- Pet Care -->
+          <div class="mb-4">
+            <h4 class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">Pet Care</h4>
+            <div class="space-y-1">
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">pets</span>
+                Pet Sitting
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">directions_walk</span>
+                Dog Walking
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">local_hospital</span>
+                Vet Visits
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">shopping_bag</span>
+                Pet Supply Delivery
+              </div>
+            </div>
+          </div>
+
+          <!-- Personal Services -->
+          <div class="mb-4">
+            <h4 class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">Personal Services</h4>
+            <div class="space-y-1">
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">local_laundry_service</span>
+                Laundry Pickup/Delivery
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">dry_cleaning</span>
+                Dry Cleaning
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">card_giftcard</span>
+                Gift Shopping
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">celebration</span>
+                Event Support
+              </div>
+            </div>
+          </div>
+
+          <!-- Home Services -->
+          <div class="mb-4">
+            <h4 class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">Home Services</h4>
+            <div class="space-y-1">
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">cleaning_services</span>
+                Cleaning Service Booking
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">handyman</span>
+                Handyman Visits
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">construction</span>
+                Package Assembly
+              </div>
+            </div>
+          </div>
+
+          <!-- Miscellaneous -->
+          <div class="mb-6">
+            <h4 class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2 px-3">Miscellaneous</h4>
+            <div class="space-y-1">
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">local_post_office</span>
+                Post Office Runs
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">computer</span>
+                Tech Support Errands
+              </div>
+              <div class="service-item flex items-center px-3 py-2 text-sm rounded-lg cursor-pointer">
+                <span class="material-icons text-lg mr-3">more_horiz</span>
+                Other Services
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Navigation -->
+      <div class="p-4 border-t border-gray-200">
+        <div class="space-y-2">
+          <a href="#" class="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-black rounded-lg">
+            <span class="material-icons text-lg mr-3">account_circle</span>
+            Profile
+          </a>
+          <a href="#" class="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-black rounded-lg">
+            <span class="material-icons text-lg mr-3">history</span>
+            Order History
+          </a>
+          <a href="#" class="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-black rounded-lg">
+            <span class="material-icons text-lg mr-3">help</span>
+            Support
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex-1">
+      <!-- Top Header -->
+      <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="px-6 py-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900">Property Visits</h2>
+              <p class="text-sm text-gray-600">Professional property inspections and reports</p>
+            </div>
+            <div class="flex items-center space-x-4">
+              <button class="bg-gray-100 hover:bg-gray-200 p-2 rounded-lg">
+                <span class="material-icons">notifications</span>
+              </button>
+              <button class="bg-gray-100 hover:bg-gray-200 p-2 rounded-lg">
+                <span class="material-icons">account_circle</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Content -->
+      <main class="p-6">
+        <!-- Map Section -->
+        <div class="mb-8">
+          <div id="map">
+            <div class="text-center">
+              <span class="material-icons text-4xl mb-2">map</span>
+              <div>Interactive Map Loading...</div>
+              <div class="text-sm">Your area and available runners will appear here</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Request Form -->
+        <div class="grid lg:grid-cols-3 gap-8">
+          <div class="lg:col-span-2">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <h3 class="text-xl font-semibold mb-6">Request Property Visit</h3>
+              
+              <div class="space-y-6">
+                <!-- Service Details -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Property Address</label>
+                    <input
+                      type="text"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="Enter property address to visit"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Contact Person</label>
+                    <input
+                      type="text"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="Property owner/manager name"
+                    />
+                  </div>
+                </div>
+
+                <!-- Date and Time Selection -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Date</label>
+                    <input
+                      type="date"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Time</label>
+                    <input
+                      type="time"
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <!-- Special Instructions -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Special Instructions & Notes</label>
+                  <textarea
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder="Any specific requirements, questions to ask, or areas to focus on during the visit..."
+                    rows="4"
+                  ></textarea>
+                </div>
+
+                <!-- Urgency Level -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Priority Level</label>
+                  <div class="grid grid-cols-3 gap-3">
+                    <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input type="radio" name="priority" value="standard" class="mr-2" />
+                      <div>
+                        <div class="font-medium text-sm">Standard</div>
+                        <div class="text-xs text-gray-500">24-48 hours</div>
+                      </div>
+                    </label>
+                    <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input type="radio" name="priority" value="urgent" class="mr-2" />
+                      <div>
+                        <div class="font-medium text-sm">Urgent</div>
+                        <div class="text-xs text-gray-500">Same day</div>
+                      </div>
+                    </label>
+                    <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                      <input type="radio" name="priority" value="flexible" class="mr-2" checked />
+                      <div>
+                        <div class="font-medium text-sm">Flexible</div>
+                        <div class="text-xs text-gray-500">Next week</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button class="w-full bg-black text-white font-medium py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors">
+                  Request Property Visit - $25
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info Panel -->
+          <div class="space-y-6">
+            <!-- Service Details -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <h4 class="font-semibold text-lg mb-4">What's Included</h4>
+              <ul class="space-y-3">
+                <li class="flex items-start">
+                  <span class="material-icons text-green-500 mr-2 text-sm mt-0.5">check_circle</span>
+                  <span class="text-sm">Detailed photo documentation</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="material-icons text-green-500 mr-2 text-sm mt-0.5">check_circle</span>
+                  <span class="text-sm">Written condition report</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="material-icons text-green-500 mr-2 text-sm mt-0.5">check_circle</span>
+                  <span class="text-sm">Neighborhood assessment</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="material-icons text-green-500 mr-2 text-sm mt-0.5">check_circle</span>
+                  <span class="text-sm">Direct communication with property contact</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Pricing Info -->
+            <div class="bg-gray-50 p-6 rounded-xl">
+              <h4 class="font-semibold text-lg mb-4">Pricing</h4>
+              <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                  <span>Base Service</span>
+                  <span>$20</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span>Platform Fee</span>
+                  <span>$3</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span>Service Tax</span>
+                  <span>$2</span>
+                </div>
+                <hr class="my-2">
+                <div class="flex justify-between font-semibold">
+                  <span>Total</span>
+                  <span>$25</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+              <h4 class="font-semibold text-lg mb-4">How It Works</h4>
+              <div class="space-y-4">
+                <div class="flex items-start">
+                  <div class="bg-black text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5">1</div>
+                  <div>
+                    <div class="font-medium text-sm">Submit Request</div>
+                    <div class="text-xs text-gray-500">Fill out the form with property details</div>
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <div class="bg-black text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5">2</div>
+                  <div>
+                    <div class="font-medium text-sm">Runner Assigned</div>
+                    <div class="text-xs text-gray-500">Qualified runner accepts your request</div>
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <div class="bg-black text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5">3</div>
+                  <div>
+                    <div class="font-medium text-sm">Property Visit</div>
+                    <div class="text-xs text-gray-500">Runner visits and documents the property</div>
+                  </div>
+                </div>
+                <div class="flex items-start">
+                  <div class="bg-black text-white rounded-full w-6 h-6 flex items-center justify-center text-xs mr-3 mt-0.5">4</div>
+                  <div>
+                    <div class="font-medium text-sm">Report Delivered</div>
+                    <div class="text-xs text-gray-500">Receive detailed photos and report</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- JavaScript for Interactive Elements -->
+  <script>
+    // Service selection functionality
+    document.querySelectorAll('.service-item').forEach(item => {
+      item.addEventListener('click', function() {
+        // Remove active class from all items
+        document.querySelectorAll('.service-item').forEach(i => i.classList.remove('active'));
+        // Add active class to clicked item
+        this.classList.add('active');
+        
+        // Update main content based on selection
+        const serviceName = this.textContent.trim();
+        document.querySelector('main h2').textContent = serviceName;
+      });
+    });
+
+    // Map initialization placeholder
+    function initMap() {
+      // Initialize your preferred mapping library here
+      console.log('Map would be initialized here with real mapping service');
+      // Example: Google Maps, Mapbox, Leaflet integration
+    }
+    
+    window.onload = initMap;
+  </script>
+</body>
+</html>
