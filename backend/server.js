@@ -1,7 +1,7 @@
 import app from './app.js';
 import dotenv from 'dotenv';
 import sequelize from './config/db.js';
-import redisClient from './config/redis.js';
+// import redisClient from './config/redis.js';
 import fs from 'fs';
 
 dotenv.config(); 

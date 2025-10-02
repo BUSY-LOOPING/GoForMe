@@ -79,7 +79,7 @@ class PaymentService {
       }
 
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
+        amount: Math.round(amount), 
         currency,
         customer: customer.id,
         metadata: {

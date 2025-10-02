@@ -84,7 +84,6 @@ class AuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
       }); 
 
-      // Redirect to frontend with access token
       const redirectUrl = `${process.env.FRONTEND_URL}/auth/callback?token=${result.access_token}`;
       res.redirect(redirectUrl);
     } catch (error) {
@@ -129,6 +128,14 @@ class AuthController {
   async logout(req, res, next) {
     try {
       const refreshToken = req.cookies.refresh_token;
+      const userId = req.user?.id;
+      console.log('refresh', refreshToken);
+
+      if (userId) {
+      await authService.logout(userId, refreshToken);
+    }
+
+      console.log('refresh', refreshToken);
       await authService.logout(req.user.id, refreshToken);
 
       res.clearCookie('refresh_token');

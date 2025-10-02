@@ -16,7 +16,8 @@ import {
   ticketRoutes,
   notificationRoutes,
   runnerRoutes,
-  paymentRoutes 
+  paymentRoutes, 
+  adminRoutes
 } from './routes/index.js';
 
 import { errorHandler } from './middlewares/index.js';
@@ -32,10 +33,11 @@ const getAllowedOrigins = () => {
   return [
     'http://localhost:3000',
     'http://localhost:3001',
-    'http://localhost:8080'
+    'http://localhost:8080',
+    'http://localhost:5173'
   ];
 };
-
+ 
 const allowedOrigins = getAllowedOrigins();
 const app = express();
 
@@ -94,6 +96,7 @@ app.use(helmet({
       connectSrc: [
         "'self'",
         "http://localhost:5000",
+        "http://localhost:5173",
         "http://localhost:3000", 
         "https://api.stripe.com",
         "https://m.stripe.network", 
@@ -114,7 +117,7 @@ app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
-
+ 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'fallback_secret',
   resave: false,
@@ -147,6 +150,7 @@ app.use('/api/tickets', ticketRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/runners', runnerRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

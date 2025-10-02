@@ -2,7 +2,6 @@ import paymentService from '../services/PaymentService.js';
 import { validationResult } from 'express-validator';
 
 class PaymentController {
-  // Create payment intent
   async createPaymentIntent(req, res, next) {
     try {
       const errors = validationResult(req);
@@ -14,7 +13,7 @@ class PaymentController {
         });
       }
 
-      const { order_id, amount, currency = 'usd' } = req.body;
+      const { order_id, amount, currency = 'cad' } = req.body;
       const userId = req.user.id;
 
       const result = await paymentService.createPaymentIntent(
@@ -36,7 +35,6 @@ class PaymentController {
     }
   }
 
-  // Confirm payment
   async confirmPayment(req, res, next) {
     try {
       const { payment_intent_id } = req.body;
@@ -56,7 +54,6 @@ class PaymentController {
     }
   }
 
-  // Save payment method
   async savePaymentMethod(req, res, next) {
     try {
       const { payment_method_id } = req.body;
@@ -77,7 +74,6 @@ class PaymentController {
     }
   }
 
-  // Get payment methods
   async getPaymentMethods(req, res, next) {
     try {
       const userId = req.user.id;
@@ -92,7 +88,6 @@ class PaymentController {
     }
   }
 
-  // Delete payment method
   async deletePaymentMethod(req, res, next) {
     try {
       const { payment_method_id } = req.params;
@@ -109,7 +104,6 @@ class PaymentController {
     }
   }
 
-  // Set default payment method
   async setDefaultPaymentMethod(req, res, next) {
     try {
       const { payment_method_id } = req.body;
@@ -126,7 +120,6 @@ class PaymentController {
     }
   }
 
-  // Process refund
   async processRefund(req, res, next) {
     try {
       const { payment_id } = req.params;
@@ -147,7 +140,6 @@ class PaymentController {
     }
   }
 
-  // Stripe webhook
   async webhook(req, res, next) {
     try {
       const signature = req.headers['stripe-signature'];
@@ -164,7 +156,6 @@ class PaymentController {
     }
   }
 
-  // Get Stripe publishable key
   async getPublishableKey(req, res, next) {
     try {
       res.json({

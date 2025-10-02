@@ -13,6 +13,7 @@ import {
 
 const router = express.Router();
 
+// ===== CATEGORY ROUTES =====
 router.get('/categories', serviceController.getAllCategories);
 router.get('/categories/:id', serviceController.getCategoryById);
 router.get('/categories/slug/:slug', serviceController.getCategoryBySlug);
@@ -35,34 +36,12 @@ router.delete('/categories/:id',
   serviceController.deleteCategory
 );
 
-// Public 
-router.get('/', serviceController.getAllServices);
 router.get('/search', serviceController.searchServices);
 router.get('/featured', serviceController.getFeaturedServices);
-router.get('/:id', serviceController.getServiceById);
-router.get('/slug/:slug', serviceController.getServiceBySlug);
-router.get('/category/:categoryId', serviceController.getServicesByCategory);
-router.post('/:id/pricing', serviceController.getServicePricing);
 
-router.post('/', 
-  authenticateToken, 
-  authorize('admin'), 
-  validateCreateService, 
-  serviceController.createService
-);
-router.put('/:id', 
-  authenticateToken, 
-  authorize('admin'), 
-  validateUpdateService, 
-  serviceController.updateService
-);
-router.delete('/:id', 
-  authenticateToken, 
-  authorize('admin'), 
-  serviceController.deleteService
-);
-
+// router.get('/:id/includes', serviceController.getServiceIncludes);
 router.get('/:serviceId/fields', serviceController.getServiceFields);
+router.post('/:serviceId/pricing', serviceController.getServicePricing);
 router.post('/:serviceId/validate', serviceController.validateServiceData);
 
 router.post('/:serviceId/fields', 
@@ -81,6 +60,30 @@ router.delete('/fields/:fieldId',
   authenticateToken, 
   authorize('admin'), 
   serviceController.deleteServiceField
+);
+
+router.get('/category/:categoryId', serviceController.getServicesByCategory);
+router.get('/slug/:slug', serviceController.getServiceBySlug);
+
+router.get('/', serviceController.getAllServices);
+router.get('/:id', serviceController.getServiceById);
+
+router.post('/', 
+  authenticateToken, 
+  authorize('admin'), 
+  validateCreateService, 
+  serviceController.createService
+);
+router.put('/:id', 
+  authenticateToken, 
+  authorize('admin'), 
+  validateUpdateService, 
+  serviceController.updateService
+);
+router.delete('/:id', 
+  authenticateToken, 
+  authorize('admin'), 
+  serviceController.deleteService
 );
 
 export default router;

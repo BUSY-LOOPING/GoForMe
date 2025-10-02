@@ -321,22 +321,6 @@ class ServiceController {
     }
   }
 
-  async getServicePricing(req, res, next) {
-    try {
-      const { id } = req.params;
-      const customData = req.body || {};
-
-      const pricing = await serviceService.getServicePricing(id, customData);
-
-      res.json({
-        success: true,
-        data: { pricing }
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
   async getServiceFields(req, res, next) {
     try {
       const { serviceId } = req.params;
@@ -440,6 +424,38 @@ class ServiceController {
       next(error);
     }
   }
+ 
+  async getServicePricing(req, res, next) {
+  try {
+    const { serviceId  } = req.params;
+    const customData = req.body || {};
+    const service = await serviceService.getServiceById(serviceId, false);
+    
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        message: 'Service not found'
+      });
+    }
+
+    const pricing = await serviceService.getServicePricing(serviceId, customData);
+
+    res.json({
+      success: true,
+      data: { 
+        pricing,
+        service: {
+          id: service.id,
+          name: service.name,
+          slug: service.slug
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Pricing calculation error:', error);
+    next(error);
+  }
+}
 }
 
 export default new ServiceController();

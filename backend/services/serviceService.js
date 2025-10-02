@@ -107,7 +107,6 @@ class ServiceService {
         order: [['sort_order', 'ASC']]
       });
     }
-
     const service = await Service.findByPk(id, {
       include: includeOptions
     });
@@ -335,22 +334,73 @@ class ServiceService {
     };
   }
 
-  calculateCustomPricing(service, customData) {
-    let basePrice = parseFloat(service.base_price);
-    
-    if (customData.distance_miles) {
-      const distanceFee = customData.distance_miles * 0.50; 
-      basePrice += distanceFee;
-    }
-    
-    if (customData.complexity === 'high') {
-      basePrice *= 1.5;
-    } else if (customData.complexity === 'medium') {
-      basePrice *= 1.25;
-    }
+  async getServicePricing(serviceId, customData = {}) {
+    console.log('getServicePricing serviceId', serviceId);
+    try {
+      const service = await Service.findByPk(serviceId);
+      
+      if (!service) {
+        throw new Error('Service not found');
+      }
 
-    return basePrice;
+      const basePrice = parseFloat(service.base_price);
+      const platformFee = 3.00;
+      
+      let priorityAdjustment = 0;
+      const priority = customData.priority || 'standard';
+      
+      switch (priority) {
+        case 'urgent':
+          priorityAdjustment = 10.00;
+          break;
+        case 'flexible':
+          priorityAdjustment = -5.00;
+          break;
+        default: // standard
+          priorityAdjustment = 0;
+          break;
+      }
+
+      let distanceFee = 0;
+      if (customData.delivery_address && service.requires_location) {
+        //  distance calculation
+        distanceFee = 0;
+      }
+
+      const subtotal = basePrice + platformFee + priorityAdjustment + distanceFee;
+      
+      const taxRate = 0.13;
+      const tax = subtotal * taxRate;
+      
+      const total = subtotal + tax;
+
+      const pricingBreakdown = {
+        base_price: parseFloat(basePrice.toFixed(2)),
+        platform_fee: parseFloat(platformFee.toFixed(2)),
+        priority_adjustment: parseFloat(priorityAdjustment.toFixed(2)),
+        distance_fee: parseFloat(distanceFee.toFixed(2)),
+        subtotal: parseFloat(subtotal.toFixed(2)),
+        tax_rate: taxRate,
+        tax: parseFloat(tax.toFixed(2)),
+        total: parseFloat(total.toFixed(2)),
+        currency: 'CAD',
+        breakdown_details: {
+          priority_level: priority,
+          // priority_description: this.getPriorityDescription(priority),
+          tax_description: 'HST (13%)',
+          includes_distance_fee: service.requires_location && customData.delivery_address
+        }
+      };
+
+      return pricingBreakdown;
+    } catch (error) {
+      console.error('Error calculating service pricing:', error);
+      throw error;
+    }
   }
+
+
+
 }
 
 export default new ServiceService();
