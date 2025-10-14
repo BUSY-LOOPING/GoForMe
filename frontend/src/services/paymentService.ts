@@ -28,6 +28,16 @@ export const paymentService = {
     return response.data.data;
   },
 
+  getPricingPreview: async (data: {
+    service_id: number;
+    priority?: string;
+    delivery_address?: string;
+    form_data?: Record<string, any>;
+  }) => {
+    const response = await api.post('/api/orders/pricing-preview', data);
+    return response.data.data;
+  },
+
   createPaymentIntent: async (data: {
     service_id: number;
     amount: number;
@@ -49,13 +59,13 @@ export const paymentService = {
       };
 
       const order = await orderService.createOrder(orderData);
-      console.log('Order created:', order);
+      // console.log('Order created:', order);
 
-      console.log('Creating payment intent for order ID:', order.id);
+      // console.log('Creating payment intent for order ID:', order.id);
       
       const paymentData = {
         order_id: order.id,
-        amount: data.amount,
+        amount: order.total_amount,
         currency: data.currency || 'cad'
       };
       
@@ -66,7 +76,7 @@ export const paymentService = {
         payment_intent: {
           id: response.data.data.payment_intent_id,
           client_secret: response.data.data.client_secret,
-          amount: data.amount,
+          amount: Math.round(paymentData.amount * 100),
           currency: data.currency || 'cad',
           status: 'requires_payment_method'
         }
@@ -77,7 +87,6 @@ export const paymentService = {
     }
   },
 
-  // Confirm payment
   confirmPayment: async (data: {
     payment_intent_id: string;
     payment_method_id: string;
@@ -90,13 +99,11 @@ export const paymentService = {
     return response.data;
   },
 
-  // Get saved payment methods
   getPaymentMethods: async (): Promise<PaymentMethod[]> => {
     const response = await api.get('/api/payments/payment-methods');
     return response.data.data.payment_methods || [];
   },
 
-  // Save payment method
   savePaymentMethod: async (payment_method_id: string) => {
     const response = await api.post('/api/payments/save-payment-method', {
       payment_method_id
@@ -104,11 +111,12 @@ export const paymentService = {
     return response.data;
   },
 
-  // Set default payment method
   setDefaultPaymentMethod: async (payment_method_id: string) => {
     const response = await api.post('/api/payments/set-default-payment-method', {
       payment_method_id
     });
     return response.data;
   },
+
+
 };

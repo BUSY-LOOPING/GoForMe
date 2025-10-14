@@ -19,6 +19,9 @@ import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AdminUserCreatePage from "./pages/admin/AdminUserCreatePage";
 import AdminUserDetailPage from "./pages/admin/AdminUserDetailPage";
 import AdminUserEditPage from "./pages/admin/AdminUserEditPage";
+import ProtectedRunnerRoute from "./components/layout/ProtectedRunnerRoute";
+import RunnerLayout from "./components/runner/RunnerLayout";
+import AvailableJobsPage from "./pages/runner/AvailableJobsPage";
 // import './clash-display.css';
 
 const App: React.FC = () => {
@@ -59,7 +62,6 @@ const App: React.FC = () => {
             <Route path="/support" element={<SupportPage />} />
             <Route path="/orders/:id" element={<OrderDetailsPage />} />
           </Route>
-
           <Route
             element={
               <ProtectedAdminRoute>
@@ -70,12 +72,45 @@ const App: React.FC = () => {
             <Route path="/admin" element={<AdminDashboardPage />} />
 
             <Route path="/admin/users" element={<AdminUsersPage />} />
-            <Route path="/admin/users/create" element={<AdminUserCreatePage />} />
+            <Route
+              path="/admin/users/create"
+              element={<AdminUserCreatePage />}
+            />
             <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />
-            <Route path="/admin/users/:id/edit" element={<AdminUserEditPage />} />
+            <Route
+              path="/admin/users/:id/edit"
+              element={<AdminUserEditPage />}
+            />
           </Route>
-
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route
+            path="/runner"
+            element={
+              <ProtectedRunnerRoute>
+                <RunnerLayout />
+              </ProtectedRunnerRoute>
+            }
+          >
+            <Route index element={<Navigate to="/runner/jobs" replace />} />
+            <Route path="jobs" element={<AvailableJobsPage />} />
+            <Route
+              path="my-jobs"
+              element={<div className="p-6">My Jobs - Coming Soon</div>}
+            />
+            <Route
+              path="history"
+              element={<div className="p-6">Job History - Coming Soon</div>}
+            />
+            <Route
+              path="earnings"
+              element={<div className="p-6">Earnings - Coming Soon</div>}
+            />
+            <Route
+              path="reviews"
+              element={<div className="p-6">Reviews - Coming Soon</div>}
+            />
+          </Route>
+          ;
         </Routes>
       </BrowserRouter>
     </Provider>

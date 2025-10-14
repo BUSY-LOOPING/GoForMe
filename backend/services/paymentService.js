@@ -73,6 +73,7 @@ class PaymentService {
     try {
       const customer = await this.getOrCreateCustomer(userId);
       const order = await Order.findByPk(orderId);
+      amount = Math.round(amount * 100);
       
       if (!order) {
         throw new Error('Order not found');

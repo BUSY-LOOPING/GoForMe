@@ -45,9 +45,136 @@ class OrderService {
     return priorityMap[priority] || "normal";
   }
 
+  calculateDistanceFee(address) {
+    return 0;
+  }
+
+  getPriorityDescription(priority) {
+    const descriptions = {
+      urgent: "Urgent Priority (+$10)",
+      high: "High Priority (+$5)",
+      normal: "Standard Priority",
+      low: "Low Priority (-$5)",
+    };
+    return descriptions[priority] || descriptions["normal"];
+  }
+
+  calculateComprehensivePricing(service, formData) {
+    const basePrice = parseFloat(service.base_price);
+    const priority = this.mapPriority(formData.priority || "standard");
+
+    let platformFee = 3.0;
+    let priorityAdjustment = 0;
+    let distanceFee = 0;
+
+    // Priority adjustments
+    switch (priority) {
+      case "urgent":
+        priorityAdjustment = 10.0;
+        break;
+      case "high":
+        priorityAdjustment = 5.0;
+        break;
+      case "low":
+        priorityAdjustment = -5.0;
+        break;
+      case "normal":
+      default:
+        priorityAdjustment = 0;
+        break;
+    }
+
+    if (formData.delivery_address) {
+      distanceFee = this.calculateDistanceFee(formData.delivery_address);
+    }
+
+    const taxRate = 0.13;
+    const subtotal = basePrice + platformFee + priorityAdjustment + distanceFee;
+    const tax = subtotal * taxRate;
+    const total = subtotal + tax;
+
+    const runnerEarnings = basePrice * 0.8;
+
+    return {
+      base_price: basePrice,
+      platform_fee: platformFee,
+      priority_adjustment: priorityAdjustment,
+      distance_fee: distanceFee,
+      subtotal: subtotal,
+      tax_rate: taxRate,
+      tax: parseFloat(tax.toFixed(2)),
+      total: parseFloat(total.toFixed(2)),
+      currency: "CAD",
+      runner_earnings: parseFloat(runnerEarnings.toFixed(2)),
+      breakdown_details: {
+        priority_level: priority,
+        priority_description: this.getPriorityDescription(priority),
+        tax_description: `HST (${(taxRate * 100).toFixed(0)}%)`,
+        includes_distance_fee: distanceFee > 0,
+      },
+    };
+  }
+
+  // async createOrder(orderData) {
+  //   const transaction = await sequelize.transaction();
+
+  //   try {
+  //     const service = await Service.findOne({
+  //       where: {
+  //         id: orderData.service_id,
+  //         is_active: true,
+  //       },
+  //       transaction,
+  //     });
+
+  //     if (!service) {
+  //       throw new Error("Service not found or inactive");
+  //     }
+
+  //     const mappedPriority = this.mapPriority(orderData.priority);
+  //     const pricing = this.calculatePricing(service.base_price, mappedPriority);
+
+  //     let scheduledDate = null;
+  //     if (orderData.preferred_date) {
+  //       scheduledDate = new Date(orderData.preferred_date);
+  //       if (orderData.preferred_time) {
+  //         const [hours, minutes] = orderData.preferred_time.split(":");
+  //         scheduledDate.setHours(parseInt(hours), parseInt(minutes));
+  //       }
+  //     }
+
+  //     const order = await Order.create(
+  //       {
+  //         user_id: orderData.user_id,
+  //         service_id: orderData.service_id,
+  //         status: "pending",
+  //         priority: mappedPriority,
+  //         delivery_address: orderData.delivery_address,
+  //         scheduled_date: scheduledDate,
+  //         special_instructions: orderData.special_instructions || null,
+  //         custom_fields: orderData.form_data || {},
+  //         base_amount: pricing.base_amount,
+  //         discount_amount: pricing.discount_amount,
+  //         tax_amount: pricing.tax_amount,
+  //         service_fee: pricing.service_fee,
+  //         total_amount: pricing.total_amount,
+  //         runner_earnings: pricing.runner_earnings,
+  //         platform_fee: pricing.platform_fee,
+  //       },
+  //       { transaction, individualHooks: true }
+  //     );
+
+  //     await transaction.commit();
+
+  //     return await this.getOrderById(order.id);
+  //   } catch (error) {
+  //     await transaction.rollback();
+  //     throw error;
+  //   }
+  // }
+
   async createOrder(orderData) {
     const transaction = await sequelize.transaction();
-
     try {
       const service = await Service.findOne({
         where: {
@@ -61,8 +188,8 @@ class OrderService {
         throw new Error("Service not found or inactive");
       }
 
-      const mappedPriority = this.mapPriority(orderData.priority);
-      const pricing = this.calculatePricing(service.base_price, mappedPriority);
+      const pricing = this.calculateComprehensivePricing(service, orderData);
+      const mappedPriority = this.mapPriority(orderData.priority || "standard");
 
       let scheduledDate = null;
       if (orderData.preferred_date) {
@@ -83,11 +210,14 @@ class OrderService {
           scheduled_date: scheduledDate,
           special_instructions: orderData.special_instructions || null,
           custom_fields: orderData.form_data || {},
-          base_amount: pricing.base_amount,
-          discount_amount: pricing.discount_amount,
-          tax_amount: pricing.tax_amount,
-          service_fee: pricing.service_fee,
-          total_amount: pricing.total_amount,
+          base_amount: pricing.base_price,
+          discount_amount: 0,
+          tax_amount: pricing.tax,
+          service_fee:
+            pricing.platform_fee +
+            pricing.priority_adjustment +
+            pricing.distance_fee,
+          total_amount: pricing.total,
           runner_earnings: pricing.runner_earnings,
           platform_fee: pricing.platform_fee,
         },
@@ -96,7 +226,9 @@ class OrderService {
 
       await transaction.commit();
 
-      return await this.getOrderById(order.id);
+      const orderWithDetails = await this.getOrderById(order.id);
+      orderWithDetails.pricing = pricing;
+      return orderWithDetails;
     } catch (error) {
       await transaction.rollback();
       throw error;
@@ -151,6 +283,11 @@ class OrderService {
     const whereClause = { user_id: userId };
     if (status) {
       whereClause.status = status;
+    } else {
+      // By default, exclude pending orders from history
+      whereClause.status = {
+        [Op.ne]: "pending", // Not equal to pending
+      };
     }
 
     const result = await Order.findAndCountAll({
@@ -249,15 +386,13 @@ class OrderService {
       ],
       order: [
         [
-          sequelize.case(
-            sequelize.where(sequelize.col("priority"), "urgent"),
-            0,
-            sequelize.where(sequelize.col("priority"), "high"),
-            1,
-            sequelize.where(sequelize.col("priority"), "normal"),
-            2,
-            3
-          ),
+          sequelize.literal(`
+            CASE 
+              WHEN priority = 'urgent' THEN 0 
+              WHEN priority = 'high' THEN 1 
+              WHEN priority = 'normal' THEN 2 
+              ELSE 3 
+            END`),
         ],
         ["created_at", "ASC"],
       ],

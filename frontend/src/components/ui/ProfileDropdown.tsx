@@ -12,6 +12,8 @@ const ProfileDropdown: React.FC = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
 
+  const isRunner = user?.roles?.some((role) => role === "runner");
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -23,8 +25,11 @@ const ProfileDropdown: React.FC = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
+    console.log('user', user);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  
 
   const getInitials = () => {
     if (!user?.first_name) return "U";
@@ -80,6 +85,24 @@ const ProfileDropdown: React.FC = () => {
           </div>
 
           <div className="py-2">
+            {/* Add Runner Dashboard option if user is a runner */}
+            {isRunner && (
+              <button
+                onClick={() => {
+                  navigate("/runner/jobs");
+                  setIsOpen(false);
+                }}
+                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors bg-blue-50 border-b border-blue-100"
+              >
+                <span className="material-icons text-blue-600">
+                  directions_run
+                </span>
+                <span className="text-sm font-semibold text-blue-600">
+                  Runner Dashboard
+                </span>
+              </button>
+            )}
+
             {menuItems.map((item) => (
               <button
                 key={item.path}

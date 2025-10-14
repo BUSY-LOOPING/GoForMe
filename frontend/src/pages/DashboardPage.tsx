@@ -5,6 +5,8 @@ import ServiceRequestForm from "../components/ui/ServiceRequestForm";
 import ServiceIncludes from "../components/ui/ServiceIncludes";
 import MapView from "../components/ui/MapView";
 import { serviceService } from "../services/serviceService";
+import { paymentService } from "../services/paymentService";
+import type { Service } from "../types";
 
 interface ServiceIncluded {
   id: number;
@@ -34,56 +36,49 @@ interface PricingBreakdown {
 }
 
 const DashboardPage: React.FC = () => {
+  const [formData, setFormData] = useState<Record<string, any>>({
+    delivery_address: "",
+    contact_phone: "",
+    preferred_date: "",
+    preferred_time: "",
+    special_instructions: "",
+    priority: "standard",
+  });
+
   const { selectedService, isLoading } = useSelector(
     (state: RootState) => state.services
   );
   const [serviceIncludes, setServiceIncludes] = useState<ServiceIncluded[]>([]);
-  const [pricingBreakdown, setPricingBreakdown] = useState<PricingBreakdown | null>(null);
+  const [pricingBreakdown, setPricingBreakdown] =
+    useState<PricingBreakdown | null>(null);
   const [loadingPricing, setLoadingPricing] = useState(false);
   const [mapAddress, setMapAddress] = useState<string>("");
-  const [mapCoordinates, setMapCoordinates] = useState<[number, number] | undefined>(undefined);
+  const [mapCoordinates, setMapCoordinates] = useState<
+    [number, number] | undefined
+  >(undefined);
 
   useEffect(() => {
-    if (selectedService) {
-      fetchServiceIncludes();
-      calculatePricing({ priority: 'flexible' });
+    if (selectedService && formData.delivery_address && formData.priority) {
+      updatePricing(selectedService, formData);
     }
-  }, [selectedService]);
+  }, [selectedService, formData.delivery_address, formData.priority]);
 
   const fetchServiceIncludes = async () => {
     if (!selectedService) return;
 
     try {
-      const response = await serviceService.getServiceIncludes(selectedService.id);
-      setServiceIncludes(response.data?.includes || []);
+      setLoadingPricing(true);
+      const pricing = await paymentService.getPricingPreview({
+        service_id: currentService.id,
+        priority: currentFormData.priority || "standard",
+        delivery_address: currentFormData.delivery_address,
+        form_data: currentFormData,
+      });
+      setPricingBreakdown(pricing);
     } catch (error) {
-      console.error("Error fetching service includes:", error);
-      setServiceIncludes([
-        {
-          id: 1,
-          service_id: selectedService.id,
-          feature_name: "Professional service execution",
-          feature_description: "Experienced runners handle your request",
-          icon_class: "fas fa-star",
-          sort_order: 1,
-        },
-        {
-          id: 2,
-          service_id: selectedService.id,
-          feature_name: "Real-time updates",
-          feature_description: "Get notified throughout the process",
-          icon_class: "fas fa-bell",
-          sort_order: 2,
-        },
-        {
-          id: 3,
-          service_id: selectedService.id,
-          feature_name: "Quality guarantee",
-          feature_description: "Satisfaction guaranteed or money back",
-          icon_class: "fas fa-shield-alt",
-          sort_order: 3,
-        },
-      ]);
+      console.error("Error fetching pricing:", error);
+    } finally {
+      setLoadingPricing(false);
     }
   };
 
@@ -92,7 +87,10 @@ const DashboardPage: React.FC = () => {
 
     try {
       setLoadingPricing(true);
-      const response = await serviceService.calculatePrice(selectedService.id, formData);
+      const response = await serviceService.calculatePrice(
+        selectedService.id,
+        formData
+      );
       setPricingBreakdown(response.data?.pricing || null);
     } catch (error) {
       console.error("Error calculating pricing:", error);
@@ -107,21 +105,44 @@ const DashboardPage: React.FC = () => {
         distance_fee: 0,
         subtotal: basePrice + platformFee,
         total: basePrice + platformFee + tax,
-        currency: 'CAD',
+        currency: "CAD",
         tax_rate: 0.13,
         breakdown_details: {
-          priority_level: 'standard',
-          priority_description: 'Standard 24-48 hour service',
-          tax_description: 'HST (13%)',
-          includes_distance_fee: false
-        }
+          priority_level: "standard",
+          priority_description: "Standard 24-48 hour service",
+          tax_description: "HST (13%)",
+          includes_distance_fee: false,
+        },
       });
     } finally {
       setLoadingPricing(false);
     }
   };
 
+  const updatePricing = async (currentService: Service, currentFormData: Record<string, any>) => {
+    if (!currentService || !currentFormData.delivery_address) {
+      return;
+    }
+
+    try {
+      setLoadingPricing(true);
+      const pricing = await paymentService.getPricingPreview({
+        service_id: currentService.id,
+        priority: currentFormData.priority || 'standard',
+        delivery_address: currentFormData.delivery_address,
+        form_data: currentFormData
+      });
+      setPricingBreakdown(pricing);
+    } catch (error) {
+      console.error('Error fetching pricing:', error);
+    } finally {
+      setLoadingPricing(false);
+    }
+  };
+
   const handleFormDataChange = (formData: any) => {
+    setFormData(formData);
+    
     if (formData.delivery_address !== mapAddress) {
       setMapAddress(formData.delivery_address);
     }
@@ -150,7 +171,8 @@ const DashboardPage: React.FC = () => {
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <ServiceRequestForm 
+          <ServiceRequestForm
+          formData={formData}
             onFormDataChange={handleFormDataChange}
             pricingBreakdown={pricingBreakdown}
           />
@@ -162,7 +184,7 @@ const DashboardPage: React.FC = () => {
           {selectedService && pricingBreakdown && (
             <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
               <h4 className="font-semibold text-lg mb-4">Pricing Breakdown</h4>
-              
+
               {loadingPricing ? (
                 <div className="text-center py-4">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-black mx-auto"></div>
@@ -175,7 +197,7 @@ const DashboardPage: React.FC = () => {
                       ${pricingBreakdown.base_price.toFixed(2)}
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Platform Fee</span>
                     <span className="font-medium">
@@ -187,8 +209,8 @@ const DashboardPage: React.FC = () => {
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Priority Adjustment</span>
                       <span className="font-medium">
-                        {pricingBreakdown.priority_adjustment > 0 ? '+' : ''}
-                        ${pricingBreakdown.priority_adjustment.toFixed(2)}
+                        {pricingBreakdown.priority_adjustment > 0 ? "+" : ""}$
+                        {pricingBreakdown.priority_adjustment.toFixed(2)}
                       </span>
                     </div>
                   )}
@@ -212,20 +234,26 @@ const DashboardPage: React.FC = () => {
                   </div>
 
                   <hr className="my-3 border-gray-300" />
-                  
+
                   <div className="flex justify-between text-base font-bold">
                     <span>Total</span>
                     <span className="text-lg">
-                      ${pricingBreakdown.total.toFixed(2)} {pricingBreakdown.currency}
+                      ${pricingBreakdown.total.toFixed(2)}{" "}
+                      {pricingBreakdown.currency}
                     </span>
                   </div>
 
                   {pricingBreakdown.breakdown_details && (
                     <div className="mt-4 p-3 bg-gray-100 rounded-lg border border-gray-300">
                       <div className="flex items-start space-x-2">
-                        <span className="material-icons text-gray-700 text-sm mt-0.5">info</span>
+                        <span className="material-icons text-gray-700 text-sm mt-0.5">
+                          info
+                        </span>
                         <p className="text-xs text-gray-700">
-                          {pricingBreakdown.breakdown_details.priority_description}
+                          {
+                            pricingBreakdown.breakdown_details
+                              .priority_description
+                          }
                         </p>
                       </div>
                     </div>

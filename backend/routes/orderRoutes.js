@@ -37,6 +37,10 @@ router.post('/:id/rate',
   orderController.rateOrder
 );
 
+router.post('/pricing-preview', 
+  authenticateToken, 
+  orderController.getPricingPreview);
+
 // Runner
 router.get('/available/list', 
   authenticateToken, 

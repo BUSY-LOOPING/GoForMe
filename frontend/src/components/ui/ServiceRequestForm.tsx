@@ -45,25 +45,27 @@ interface PricingBreakdown {
 }
 
 interface Props {
-  onFormDataChange?: (formData: any) => void;
+  formData: Record<string, any>;
+  onFormDataChange: (formData: any) => void;
   pricingBreakdown: PricingBreakdown | null;
 }
 
 const ServiceRequestForm: React.FC<Props> = ({
+  formData,
   onFormDataChange,
   pricingBreakdown,
 }) => {
   const { selectedService } = useSelector((state: RootState) => state.services);
   const { user } = useSelector((state: RootState) => state.auth);
 
-  const [formData, setFormData] = useState<Record<string, any>>({
-    special_instructions: "",
-    priority: "flexible",
-    delivery_address: "",
-    contact_phone: "",
-    preferred_date: "",
-    preferred_time: "",
-  });
+  // const [formData, setFormData] = useState<Record<string, any>>({
+  //   special_instructions: "",
+  //   priority: "flexible",
+  //   delivery_address: "",
+  //   contact_phone: "",
+  //   preferred_date: "",
+  //   preferred_time: "",
+  // });
   const [serviceFields, setServiceFields] = useState<ServiceField[]>([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -80,14 +82,29 @@ const ServiceRequestForm: React.FC<Props> = ({
         preferred_date: "",
         preferred_time: "",
       };
-      setFormData(initialFormData);
+      onFormDataChange(initialFormData); // Now safe to call without checking
       setErrors({});
-
-      if (onFormDataChange) {
-        onFormDataChange(initialFormData);
-      }
     }
   }, [selectedService?.id]);
+
+  useEffect(() => {
+    if (serviceFields.length > 0 && selectedService) {
+      const dynamicFieldsInitial: Record<string, any> = {};
+
+      serviceFields.forEach((field) => {
+        if (!(field.field_name in formData)) {
+          dynamicFieldsInitial[field.field_name] = "";
+        }
+      });
+
+      if (Object.keys(dynamicFieldsInitial).length > 0) {
+        onFormDataChange({
+          ...formData,
+          ...dynamicFieldsInitial,
+        });
+      }
+    }
+  }, [serviceFields]);
 
   const fetchServiceFields = async () => {
     if (!selectedService) return;
@@ -97,7 +114,8 @@ const ServiceRequestForm: React.FC<Props> = ({
       const response = await serviceService.getServiceFields(
         selectedService.id
       );
-      setServiceFields(response.data?.fields || []);
+      console.log('response.data', response);
+      setServiceFields(response.fields || []);
     } catch (error) {
       console.error("Error fetching service fields:", error);
       setServiceFields([]);
@@ -112,7 +130,7 @@ const ServiceRequestForm: React.FC<Props> = ({
       [fieldName]: value,
     };
 
-    setFormData(updatedFormData);
+    onFormDataChange(updatedFormData);
 
     if (errors[fieldName]) {
       setErrors((prev) => ({
@@ -335,7 +353,7 @@ const ServiceRequestForm: React.FC<Props> = ({
                     updatedFormData.coordinates = coordinates;
                   }
 
-                  setFormData(updatedFormData);
+                  onFormDataChange(updatedFormData);
 
                   if (errors.delivery_address) {
                     setErrors((prev) => ({
