@@ -3,7 +3,7 @@ import User from "../models/User.js";
 import Service from "../models/Service.js";
 import UserRole from "../models/UserRole.js";
 import { Op } from "sequelize";
-import sequelize from "../config/db.js";
+import {sequelize} from "../config/db.js";
 
 class OrderService {
   calculatePricing(basePrice, priority = "normal") {

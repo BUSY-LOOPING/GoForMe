@@ -1,4 +1,4 @@
-import paymentService from '../services/PaymentService.js';
+import paymentService from '../services/paymentService.js';
 import { validationResult } from 'express-validator';
 
 class PaymentController {

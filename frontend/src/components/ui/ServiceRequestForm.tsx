@@ -228,6 +228,7 @@ const ServiceRequestForm: React.FC<Props> = ({
       ) => handleInputChange(field.field_name, e.target.value),
     };
 
+    console.log('field', field);
     switch (field.field_type) {
       case "textarea":
         return <textarea {...commonProps} rows={4} />;
@@ -236,8 +237,7 @@ const ServiceRequestForm: React.FC<Props> = ({
         let options: string[] = [];
         try {
           if (field.field_options) {
-            const parsed = JSON.parse(field.field_options);
-            options = Array.isArray(parsed) ? parsed : [];
+            options = field.field_options;
           }
         } catch (e) {
           console.error("Error parsing field options:", e);
@@ -255,9 +255,7 @@ const ServiceRequestForm: React.FC<Props> = ({
         );
 
       case "number":
-        const validationRules = field.validation_rules
-          ? JSON.parse(field.validation_rules)
-          : {};
+        const validationRules = field.validation_rules ?? {};
         return (
           <input
             {...commonProps}

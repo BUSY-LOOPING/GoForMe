@@ -1,12 +1,14 @@
 import app from './app.js';
 import dotenv from 'dotenv';
-import sequelize from './config/db.js';
+import { runMigrations, runSeeders, sequelize } from './config/db.js'
 // import redisClient from './config/redis.js';
 import fs from 'fs';
 
-dotenv.config(); 
+if (!process.env.DOCKER_ENV) {
+  dotenv.config();
+}
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 async function createDirectories() {
   const directories = [
@@ -62,6 +64,12 @@ async function startServer() {
     await createDirectories();
 
     await connectDatabase();
+
+    await runMigrations();
+
+    if (process.env.RUN_SEEDERS === 'true') {
+      await runSeeders();
+    }
 
     // await connectRedis();
 

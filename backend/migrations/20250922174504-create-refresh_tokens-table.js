@@ -19,8 +19,9 @@ export async function up(queryInterface, Sequelize) {
         onDelete: 'CASCADE'
       },
       token: {
-        type: Sequelize.TEXT,
-        allowNull: false
+        type: Sequelize.STRING(512),
+        allowNull: false,
+        unique: true 
       },
       expires_at: {
         type: Sequelize.DATE,
@@ -47,7 +48,6 @@ export async function up(queryInterface, Sequelize) {
     });
 
     await queryInterface.addIndex('refresh_tokens', ['user_id']);
-    await queryInterface.addIndex('refresh_tokens', ['token'], { unique: true });
     await queryInterface.addIndex('refresh_tokens', ['expires_at']);
     await queryInterface.addIndex('refresh_tokens', ['is_revoked']);
 }

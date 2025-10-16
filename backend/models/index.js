@@ -12,7 +12,7 @@ import Ticket from './Ticket.js';
 import Message from './Message.js';
 import RunnerImage from './RunnerImage.js';
 import RefreshToken from './RefreshToken.js';
-import sequelize from '../config/db.js';
+import {sequelize} from '../config/db.js';
 
 const models = {
   User,
