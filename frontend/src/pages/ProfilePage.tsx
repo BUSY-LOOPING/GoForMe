@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
-// import { updateUser } from '../store/slices/authSlice';
-import api from '../services/api';
 
 const ProfilePage: React.FC = () => {
   const dispatch = useDispatch();

@@ -9,15 +9,15 @@ class OrderService {
   calculatePricing(basePrice, priority = "normal") {
     let baseAmount = parseFloat(basePrice);
     let discountAmount = 0;
-    let serviceFee = 3.0; // Platform fee
-    let taxAmount = 2.0; // Service tax
+    let serviceFee = 3.0; 
+    let taxAmount = 2.0; 
 
     switch (priority) {
       case "urgent":
-        serviceFee += 10.0; // Urgent surcharge
+        serviceFee += 10.0;
         break;
       case "low":
-        discountAmount = 5.0; // Low priority discount
+        discountAmount = 5.0; 
         break;
     }
 
@@ -67,7 +67,6 @@ class OrderService {
     let priorityAdjustment = 0;
     let distanceFee = 0;
 
-    // Priority adjustments
     switch (priority) {
       case "urgent":
         priorityAdjustment = 10.0;
@@ -284,9 +283,8 @@ class OrderService {
     if (status) {
       whereClause.status = status;
     } else {
-      // By default, exclude pending orders from history
       whereClause.status = {
-        [Op.ne]: "pending", // Not equal to pending
+        [Op.ne]: "pending", 
       };
     }
 

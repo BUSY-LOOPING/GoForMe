@@ -13,7 +13,7 @@ import {
 
 const router = express.Router();
 
-// ===== CATEGORY ROUTES =====
+// ===== CATEGORY ROTES =====
 router.get('/categories', serviceController.getAllCategories);
 router.get('/categories/:id', serviceController.getCategoryById);
 router.get('/categories/slug/:slug', serviceController.getCategoryBySlug);

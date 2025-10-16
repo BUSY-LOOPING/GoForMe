@@ -31,13 +31,11 @@ interface OrderUpdateData {
 }
 
 export const adminService = {
-  // Dashboard
   getDashboardStats: async () => {
     const response = await api.get("api/admin/dashboard/stats");
     return response.data;
   },
 
-  // User Management
   getAllUsers: async (params?: PaginationParams, is_active?: boolean) => {
     const queryParams: any = {
       page: params?.page || 1,
@@ -77,7 +75,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Role Management
   assignRole: async (userId: number, role: string) => {
     const response = await api.post(`api/admin/users/${userId}/roles`, {
       role,
@@ -92,7 +89,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Order Management
   getAllOrders: async (params?: PaginationParams, status?: string) => {
     const queryParams: any = {
       page: params?.page || 1,
@@ -122,7 +118,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Service Management
   getAllServices: async (params?: PaginationParams) => {
     const queryParams = {
       page: params?.page || 1,
@@ -154,7 +149,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Runner Management
   getAllRunners: async (params?: PaginationParams, status?: string) => {
     const queryParams: any = {
       page: params?.page || 1,
@@ -186,7 +180,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Analytics
   getRevenueAnalytics: async (startDate?: string, endDate?: string) => {
     const params: any = {};
     if (startDate) params.start_date = startDate;
@@ -203,7 +196,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Search
   searchUsers: async (searchTerm: string, params?: PaginationParams) => {
     const queryParams = {
       search: searchTerm,
@@ -216,7 +208,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Bulk Operations
   bulkDeleteUsers: async (userIds: number[]) => {
     const response = await api.post("api/admin/users/bulk-delete", {
       ids: userIds,
@@ -232,7 +223,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Reports
   exportUsers: async (format: "csv" | "xlsx" = "csv") => {
     const response = await api.get("api/admin/reports/users", {
       params: { format },
@@ -249,7 +239,6 @@ export const adminService = {
     return response.data;
   },
 
-  // System Settings
   getSystemSettings: async () => {
     const response = await api.get("api/admin/settings");
     return response.data;
@@ -260,7 +249,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Activity Logs
   getActivityLogs: async (params?: PaginationParams) => {
     const queryParams = {
       page: params?.page || 1,
@@ -283,7 +271,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Notifications
   sendNotification: async (
     userIds: number[],
     notification: {
@@ -299,36 +286,33 @@ export const adminService = {
     return response.data;
   },
 
-  // Email Management
-  sendEmail: async (
-    userIds: number[],
-    email: {
-      subject: string;
-      body: string;
-      template?: string;
-    }
-  ) => {
-    const response = await api.post("api/admin/emails/send", {
-      user_ids: userIds,
-      ...email,
-    });
-    return response.data;
-  },
+  // sendEmail: async (
+  //   userIds: number[],
+  //   email: {
+  //     subject: string;
+  //     body: string;
+  //     template?: string;
+  //   }
+  // ) => {
+  //   const response = await api.post("api/admin/emails/send", {
+  //     user_ids: userIds,
+  //     ...email,
+  //   });
+  //   return response.data;
+  // },
 
-  // Password Management
-  resetUserPassword: async (userId: number) => {
-    const response = await api.post(`api/admin/users/${userId}/reset-password`);
-    return response.data;
-  },
+  // resetUserPassword: async (userId: number) => {
+  //   const response = await api.post(`api/admin/users/${userId}/reset-password`);
+  //   return response.data;
+  // },
 
-  // Verification
-  verifyUserEmail: async (userId: number) => {
-    const response = await api.patch(`api/admin/users/${userId}/verify-email`);
-    return response.data;
-  },
+  // verifyUserEmail: async (userId: number) => {
+  //   const response = await api.patch(`api/admin/users/${userId}/verify-email`);
+  //   return response.data;
+  // },
 
-  verifyUserPhone: async (userId: number) => {
-    const response = await api.patch(`api/admin/users/${userId}/verify-phone`);
-    return response.data;
-  },
+  // verifyUserPhone: async (userId: number) => {
+  //   const response = await api.patch(`api/admin/users/${userId}/verify-phone`);
+  //   return response.data;
+  // },
 };

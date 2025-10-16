@@ -19,7 +19,6 @@ const RunnerSidebar: React.FC<RunnerSidebarProps> = ({
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
 
-  // Hardcoded stats for now
   const todayEarnings = 127;
   const jobsCompleted = 8;
   const rating = 4.9;

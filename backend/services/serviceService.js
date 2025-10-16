@@ -356,14 +356,13 @@ class ServiceService {
         case 'flexible':
           priorityAdjustment = -5.00;
           break;
-        default: // standard
+        default: 
           priorityAdjustment = 0;
           break;
       }
 
       let distanceFee = 0;
       if (customData.delivery_address && service.requires_location) {
-        //  distance calculation
         distanceFee = 0;
       }
 

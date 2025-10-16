@@ -168,7 +168,6 @@ const ServiceRequestForm: React.FC<Props> = ({
         newErrors[field.field_name] = `${field.field_label} is required`;
       }
 
-      // Validate number fields with rules
       if (field.validation_rules && formData[field.field_name]) {
         try {
           const rules = JSON.parse(field.validation_rules);

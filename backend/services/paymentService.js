@@ -229,7 +229,6 @@ class PaymentService {
         },
       });
 
-      // Update database
       await PaymentMethod.update(
         { is_default: false },
         { where: { user_id: userId } }

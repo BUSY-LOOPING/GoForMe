@@ -197,7 +197,6 @@ class AuthController {
       res.json({
         success: true,
         message: result.message,
-        // Remove resetToken in production
         resetToken: result.resetToken
       });
     } catch (error) {

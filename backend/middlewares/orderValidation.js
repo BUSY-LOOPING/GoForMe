@@ -13,7 +13,7 @@ export const validateCreateOrder = [
     .withMessage('Contact phone cannot be empty if provided'),
   body('priority')
     .optional()
-    .isIn(['low', 'normal', 'high', 'urgent']) // Your actual enum values
+    .isIn(['low', 'normal', 'high', 'urgent'])
     .withMessage('Invalid priority level'),
   body('special_instructions')
     .optional()

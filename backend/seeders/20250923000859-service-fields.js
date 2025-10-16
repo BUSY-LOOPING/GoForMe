@@ -1,6 +1,5 @@
 export const up = async (queryInterface, Sequelize) => {
   await queryInterface.bulkInsert('service_fields', [
-    // Basic Grocery Shopping Fields
     {
       service_id: 1,
       field_name: 'store_preference',
@@ -54,7 +53,6 @@ export const up = async (queryInterface, Sequelize) => {
       created_at: new Date(),
       updated_at: new Date()
     },
-    // Restaurant Pickup Fields
     {
       service_id: 4,
       field_name: 'restaurant_name',
@@ -106,7 +104,6 @@ export const up = async (queryInterface, Sequelize) => {
       created_at: new Date(),
       updated_at: new Date()
     },
-    // Prescription Pickup Fields
     {
       service_id: 6,
       field_name: 'pharmacy_name',
@@ -158,7 +155,6 @@ export const up = async (queryInterface, Sequelize) => {
       created_at: new Date(),
       updated_at: new Date()
     },
-    // Custom Errand Fields
     {
       service_id: 15,
       field_name: 'errand_description',

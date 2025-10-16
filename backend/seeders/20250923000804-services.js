@@ -1,6 +1,5 @@
 export const up = async (queryInterface, Sequelize) => {
   await queryInterface.bulkInsert('services', [
-    // Grocery Shopping Services
     {
       id: 1,
       category_id: 1,
@@ -49,7 +48,6 @@ export const up = async (queryInterface, Sequelize) => {
       created_at: new Date(),
       updated_at: new Date()
     },
-    // Food Delivery Services
     {
       id: 4,
       category_id: 2,
@@ -82,7 +80,6 @@ export const up = async (queryInterface, Sequelize) => {
       created_at: new Date(),
       updated_at: new Date()
     },
-    // Pharmacy & Medical Services
     {
       id: 6,
       category_id: 3,
@@ -115,7 +112,6 @@ export const up = async (queryInterface, Sequelize) => {
       created_at: new Date(),
       updated_at: new Date()
     },
-    // Package & Mail Services
     {
       id: 8,
       category_id: 4,
@@ -148,7 +144,6 @@ export const up = async (queryInterface, Sequelize) => {
       created_at: new Date(),
       updated_at: new Date()
     },
-    // Household Services
     {
       id: 10,
       category_id: 5,
@@ -181,7 +176,6 @@ export const up = async (queryInterface, Sequelize) => {
       created_at: new Date(),
       updated_at: new Date()
     },
-    // Personal Care Services
     {
       id: 12,
       category_id: 6,
@@ -198,7 +192,6 @@ export const up = async (queryInterface, Sequelize) => {
       created_at: new Date(),
       updated_at: new Date()
     },
-    // Pet Services
     {
       id: 13,
       category_id: 7,
@@ -231,7 +224,6 @@ export const up = async (queryInterface, Sequelize) => {
       created_at: new Date(),
       updated_at: new Date()
     },
-    // Miscellaneous Services
     {
       id: 15,
       category_id: 8,
