@@ -42,7 +42,7 @@ const AdminUsersListPage: React.FC = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [pagination.page]);
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -51,6 +51,7 @@ const AdminUsersListPage: React.FC = () => {
         { page: pagination.page, limit: pagination.limit },
         false
       );
+      console.log(response);
       setUsers(response.data || []);
       setPagination(response.pagination);
     } catch (error) {
@@ -63,6 +64,7 @@ const AdminUsersListPage: React.FC = () => {
 
   const handlePageChange = (newPage: number) => {
     setPagination((prev) => ({ ...prev, page: newPage }));
+    fetchUsers();
   };
 
   const handleToggleStatus = async (userId: number, currentStatus: boolean) => {

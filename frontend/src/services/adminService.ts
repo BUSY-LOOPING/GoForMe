@@ -44,7 +44,7 @@ export const adminService = {
     if (is_active !== undefined) {
       queryParams.is_active = is_active;
     }
-    const response = await api.get("api/admin/users", { params: queryParams });
+    const response = await api.get("/api/admin/users", { params: queryParams });
     return response.data;
   },
 
