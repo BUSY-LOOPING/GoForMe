@@ -1,12 +1,14 @@
-import app from './app.js';
 import dotenv from 'dotenv';
+if (!process.env.DOCKER_ENV) {
+  console.log('Loading .env file');
+  dotenv.config();
+}
+
+import app from './app.js';
 import { runMigrations, runSeeders, sequelize } from './config/db.js'
 // import redisClient from './config/redis.js';
 import fs from 'fs';
 
-if (!process.env.DOCKER_ENV) {
-  dotenv.config();
-}
 
 const PORT = process.env.PORT || 8000;
 
@@ -23,7 +25,7 @@ async function createDirectories() {
         fs.mkdirSync(dir, { recursive: true });
         console.log(`Directory created: ${dir}`);
       }
-    } catch (error) {
+    } catch (error) { 
       console.error(`Failed to create directory ${dir}:`, error);
     }
   }

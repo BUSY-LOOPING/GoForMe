@@ -1,3 +1,9 @@
+import dotenv from 'dotenv';
+if (!process.env.DOCKER_ENV) {
+  console.log('Loading .env file');
+  dotenv.config();
+}
+
 import { Sequelize } from "sequelize";
 import { Umzug, SequelizeStorage } from "umzug";
 import { fileURLToPath, pathToFileURL } from "url";
@@ -5,6 +11,8 @@ import { dirname, join } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+console.log('Database configuration process.env.DB_HOST:', process.env.DB_HOST);
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,

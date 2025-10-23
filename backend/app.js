@@ -33,6 +33,7 @@ const getAllowedOrigins = () => {
   return [
     'http://localhost:3000',
     'http://localhost:3001',
+    'http://localhost:8080',
     'http://localhost:8081',
     'http://localhost:5173'
   ];
@@ -50,7 +51,7 @@ if (!origin) {
     }
     
     if (allowedOrigins.includes(origin)) {
-      callback(null, true);  // ✅ Return true, not the origin
+      callback(null, origin);  
     } else {
       console.log(`CORS blocked origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
